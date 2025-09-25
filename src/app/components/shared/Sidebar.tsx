@@ -11,7 +11,7 @@ export default function Sidebar() {
         {
             href: '/dashboard',
             icon: BarChart3,
-            label: 'Dashboard',
+            label: 'Beranda',
             isActive: pathname === '/dashboard'
         },
         {
@@ -23,13 +23,13 @@ export default function Sidebar() {
         {
             href: '/dashboard/users',
             icon: Users,
-            label: 'Users',
+            label: 'Pengguna',
             isActive: pathname.startsWith('/dashboard/users')
         },
         {
             href: '/dashboard/reports',
             icon: FileText,
-            label: 'Reports',
+            label: 'Laporan',
             isActive: pathname.startsWith('/dashboard/reports')
         }
     ];
@@ -74,7 +74,7 @@ export default function Sidebar() {
                 </ul>
             </nav>
 
-            {/* User Profile */}
+            {/* User Profile
             <div className="p-4 border-t border-gray-100">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -92,7 +92,7 @@ export default function Sidebar() {
                         <LogOut className="w-4 h-4" />
                     </button>
                 </div>
-            </div>
+            </div> */}
         </aside>
     );
 }

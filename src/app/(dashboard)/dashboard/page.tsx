@@ -1,138 +1,297 @@
-import { Search, MoreHorizontal, Trash2, Edit } from 'lucide-react';
+"use client";
+
+import {
+    useReactTable,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    flexRender,
+    createColumnHelper,
+    type SortingState
+} from '@tanstack/react-table';
+import { useState } from 'react';
+import { Search, ChevronUp, ChevronDown, Edit, Trash2 } from 'lucide-react';
+
+// Define the type for our inventory data
+interface InventoryItem {
+    id: number;
+    name: string;
+    condition: string;
+    conditionColor: string;
+    location: string;
+    description: string;
+}
 
 export default function DashboardPage() {
-    // Sample data - replace with your actual data
-    const inventoryData = [
+    const [data, setData] = useState<InventoryItem[]>([
         {
             id: 1,
             name: "Lampu Jalan",
-            condition: "Customer",
+            condition: "Baik",
             conditionColor: "text-green-600 bg-green-50",
-            location: "Content curating app",
-            description: "Brings all your news into one place"
+            location: "KM 15+200 Tol Jakarta-Cikampek",
+            description: "Lampu LED 100W dengan tiang galvanis"
         },
         {
             id: 2,
-            name: "Lampu Jalan",
-            condition: "Churned",
-            conditionColor: "text-gray-600 bg-gray-50",
-            location: "Design software",
-            description: "Super lightweight design app"
+            name: "Rambu Lalu Lintas",
+            condition: "Rusak",
+            conditionColor: "text-red-600 bg-red-50",
+            location: "KM 22+500 Tol Jakarta-Cikampek",
+            description: "Rambu batas kecepatan 80 km/jam"
         },
         {
             id: 3,
-            name: "Lampu Jalan",
-            condition: "Customer",
+            name: "CCTV Pengawas",
+            condition: "Baik",
             conditionColor: "text-green-600 bg-green-50",
-            location: "Data prediction",
-            description: "AI and machine learning data"
+            location: "KM 18+100 Tol Jakarta-Cikampek",
+            description: "Kamera pengawas lalu lintas HD"
         },
         {
             id: 4,
-            name: "Lampu Jalan",
-            condition: "Customer",
-            conditionColor: "text-green-600 bg-green-50",
-            location: "Productivity app",
-            description: "Time management and productivity"
+            name: "Guardrail",
+            condition: "Perlu Perbaikan",
+            conditionColor: "text-yellow-600 bg-yellow-50",
+            location: "KM 25+000 Tol Jakarta-Cikampek",
+            description: "Pembatas jalan sepanjang 50 meter"
         }
+    ]);
+
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [filtering, setFiltering] = useState<string>('');
+
+
+    const columnHelper = createColumnHelper<InventoryItem>();
+
+    const columns = [
+        columnHelper.accessor('name', {
+            header: 'Nama Inventaris',
+            cell: info => (
+                <div className="font-medium text-gray-900">
+                    {info.getValue()}
+                </div>
+            ),
+        }),
+        columnHelper.accessor('condition', {
+            header: 'Kondisi',
+            cell: info => {
+                const row = info.row.original;
+                return (
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${row.conditionColor}`}>
+                        {info.getValue()}
+                    </span>
+                );
+            },
+        }),
+        columnHelper.accessor('location', {
+            header: 'Lokasi',
+            cell: info => {
+                const row = info.row.original;
+                return (
+                    <div>
+                        <p className="font-medium text-gray-900">{info.getValue()}</p>
+                        <p className="text-sm text-gray-500">{row.description}</p>
+                    </div>
+                );
+            },
+        }),
+        columnHelper.display({
+            id: 'actions',
+            header: '',
+            cell: info => (
+                <div className="flex items-center justify-end space-x-2">
+                    <button
+                        onClick={() => handleEdit(info.row.original.id)}
+                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                    >
+                        <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={() => handleDelete(info.row.original.id)}
+                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
+                </div>
+            ),
+        }),
     ];
 
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        state: {
+            sorting,
+            globalFilter: filtering,
+        },
+        onSortingChange: setSorting,
+        onGlobalFilterChange: setFiltering,
+        initialState: {
+            pagination: {
+                pageSize: 10,
+            },
+        },
+    });
+
+    const handleDelete = (id: number) => {
+        setData(prev => prev.filter(item => item.id !== id));
+    };
+
+    const handleEdit = (id: number) => {
+        console.log('Edit item with id:', id);
+    };
+
+
     return (
-        <div className="p-8 bg-white min-h-screen">
+        <div className="p-8 bg-white">
             {/* Header Section */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, Olivia</h1>
-                <p className="text-gray-600">Track, manage and forecast your customers and orders.</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Selamat datang kembali, Hady</h3>
+                <p className="text-gray-600">Lacak dan kelola Perlengkapan Jalan Tol.</p>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-medium text-gray-700">Total inventaris</h3>
-                        <button className="text-gray-400 hover:text-gray-600">
-                            <MoreHorizontal className="w-4 h-4" />
-                        </button>
-                    </div>
-                    <p className="text-3xl font-bold text-gray-900">2,420</p>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Total inventaris</h3>
+                    <p className="text-3xl font-bold text-gray-900">{data.length}</p>
                 </div>
-
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-medium text-gray-700">Total titik penempatan</h3>
-                        <button className="text-gray-400 hover:text-gray-600">
-                            <MoreHorizontal className="w-4 h-4" />
-                        </button>
-                    </div>
-                    <p className="text-3xl font-bold text-gray-900">2,420</p>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Total titik penempatan</h3>
+                    <p className="text-3xl font-bold text-gray-900">15</p>
                 </div>
-
                 <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-medium text-gray-700">Total inventaris kondisi baik</h3>
-                        <button className="text-gray-400 hover:text-gray-600">
-                            <MoreHorizontal className="w-4 h-4" />
-                        </button>
-                    </div>
-                    <p className="text-3xl font-bold text-gray-900">2,420</p>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Total inventaris kondisi baik</h3>
+                    <p className="text-3xl font-bold text-gray-900">
+                        {data.filter(item => item.condition === 'Baik').length}
+                    </p>
                 </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="mb-6">
-                <div className="relative max-w-md">
+            {/* Table Controls */}
+            <div className="mb-6 flex justify-between items-center">
+                <div className="relative max-w-sm">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                         type="text"
-                        placeholder="Search"
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                        placeholder="Cari inventaris..."
+                        value={filtering}
+                        onChange={(e) => setFiltering(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm"
                     />
+                </div>
+                <div className="text-sm text-gray-500">
+                    Menampilkan {table.getRowModel().rows.length} dari {data.length} data
                 </div>
             </div>
 
-            {/* Inventory Table */}
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <div className="grid grid-cols-12 gap-4 text-sm font-medium text-gray-700">
-                        <div className="col-span-3">Nama Inventaris</div>
-                        <div className="col-span-2">Kondisi</div>
-                        <div className="col-span-6">Lokasi</div>
-                        <div className="col-span-1"></div>
-                    </div>
+            {/* Table */}
+            {/* Table (Desktop) */}
+            <div className="hidden md:block bg-white rounded-lg border border-gray-200 shadow-sm">
+                <div className="overflow-x-auto">
+                    <table className="min-w-max w-full">
+                        <thead className="bg-gray-50">
+                            {table.getHeaderGroups().map(headerGroup => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map(header => (
+                                        <th
+                                            key={header.id}
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                            onClick={header.column.getToggleSortingHandler()}
+                                        >
+                                            <div className="flex items-center space-x-1">
+                                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                                {header.column.getIsSorted() && (
+                                                    header.column.getIsSorted() === 'desc'
+                                                        ? <ChevronDown className="w-4 h-4" />
+                                                        : <ChevronUp className="w-4 h-4" />
+                                                )}
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            ))}
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            {table.getRowModel().rows.map(row => (
+                                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                                    {row.getVisibleCells().map(cell => (
+                                        <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-                <div className="divide-y divide-gray-200">
-                    {inventoryData.map((item) => (
-                        <div key={item.id} className="px-6 py-4 hover:bg-gray-50">
-                            <div className="grid grid-cols-12 gap-4 items-center">
-                                <div className="col-span-3">
-                                    <p className="font-medium text-gray-900">{item.name}</p>
+            {/* Cards (Mobile) */}
+            <div className="block md:hidden space-y-4">
+                {table.getRowModel().rows.slice(0, 5).map(row => {
+                    const item = row.original as InventoryItem;
+                    return (
+                        <div
+                            key={item.id}
+                            className="bg-white rounded-lg border border-gray-200 shadow-sm p-4"
+                        >
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h4 className="font-semibold text-gray-900">{item.name}</h4>
+                                    <p className="text-sm text-gray-500">{item.location}</p>
                                 </div>
+                                <span
+                                    className={`px-2 py-1 text-xs font-medium rounded-full ${item.conditionColor}`}
+                                >
+                                    {item.condition}
+                                </span>
+                            </div>
+                            <p className="mt-2 text-sm text-gray-600">{item.description}</p>
 
-                                <div className="col-span-2">
-                                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${item.conditionColor}`}>
-                                        {item.condition}
-                                    </span>
-                                </div>
-
-                                <div className="col-span-6">
-                                    <div>
-                                        <p className="font-medium text-gray-900">{item.location}</p>
-                                        <p className="text-sm text-gray-500">{item.description}</p>
-                                    </div>
-                                </div>
-
-                                <div className="col-span-1 flex items-center justify-end space-x-2">
-                                    <button className="p-1 text-gray-400 hover:text-gray-600">
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1 text-gray-400 hover:text-gray-600">
-                                        <Edit className="w-4 h-4" />
-                                    </button>
-                                </div>
+                            {/* Actions */}
+                            <div className="flex items-center space-x-2 mt-3">
+                                <button
+                                    onClick={() => handleEdit(item.id)}
+                                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                >
+                                    <Edit className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
                             </div>
                         </div>
-                    ))}
+                    );
+                })}
+                {/* Pagination for cards */}
+                <div className="flex items-center justify-between mt-4">
+                    <button
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                        className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                    >
+                        Previous
+                    </button>
+                    <span className="text-sm text-gray-500">
+                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                    </span>
+                    <button
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                        className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                    >
+                        Next
+                    </button>
                 </div>
             </div>
         </div>
