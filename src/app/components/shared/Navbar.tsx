@@ -17,8 +17,8 @@ export default function Navbar() {
     const pageTitleMap: Record<string, string> = {
         "/dashboard": "Beranda",
         "/inventaris": "Inventaris",
-        "/dashboard/users": "Pengguna",
-        "/dashboard/reports": "Laporan",
+        "/pengguna": "Pengguna",
+        "/laporan": "Laporan",
     };
 
     let title = "Dashboard";
@@ -47,8 +47,8 @@ export default function Navbar() {
     const menuItems = [
         { href: "/dashboard", label: "Beranda", icon: BarChart3 },
         { href: "/inventaris", label: "Inventaris", icon: CheckSquare },
-        { href: "/dashboard/users", label: "Pengguna", icon: Users },
-        { href: "/dashboard/reports", label: "Laporan", icon: FileText },
+        { href: "/pengguna", label: "Pengguna", icon: Users },
+        { href: "/laporan", label: "Laporan", icon: FileText },
     ];
 
     return (
@@ -71,8 +71,8 @@ export default function Navbar() {
                                     key={href}
                                     href={href}
                                     className={`flex items-center px-4 py-2 text-sm ${pathname.startsWith(href)
-                                            ? "bg-gray-100 font-semibold text-gray-900"
-                                            : "text-gray-700 hover:bg-gray-50"
+                                        ? "bg-gray-100 font-semibold text-gray-900"
+                                        : "text-gray-700 hover:bg-gray-50"
                                         }`}
                                     onClick={() => setOpenMenu(false)}
                                 >

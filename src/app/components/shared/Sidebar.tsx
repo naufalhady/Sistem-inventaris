@@ -21,16 +21,16 @@ export default function Sidebar() {
             isActive: pathname.startsWith('/inventaris')
         },
         {
-            href: '/dashboard/users',
+            href: '/pengguna',
             icon: Users,
             label: 'Pengguna',
-            isActive: pathname.startsWith('/dashboard/users')
+            isActive: pathname.startsWith('/pengguna')
         },
         {
-            href: '/dashboard/reports',
+            href: '/laporan',
             icon: FileText,
             label: 'Laporan',
-            isActive: pathname.startsWith('/dashboard/reports')
+            isActive: pathname.startsWith('/laporan')
         }
     ];
 
