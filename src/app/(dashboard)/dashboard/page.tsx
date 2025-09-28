@@ -10,8 +10,9 @@ import {
     createColumnHelper,
     type SortingState
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, ChevronUp, ChevronDown, Edit, Trash2 } from 'lucide-react';
+import AddButton from "../../components/ui/AddButton";
 
 // Define the type for our inventory data
 interface InventoryItem {
@@ -139,12 +140,42 @@ export default function DashboardPage() {
         },
     });
 
+    // Responsive pageSize: 10 desktop, 5 mobile
+    useEffect(() => {
+        const checkMobile = () => {
+            if (window.innerWidth < 768) {
+                table.setPageSize(5);
+            } else {
+                table.setPageSize(10);
+            }
+        };
+
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+
+        return () => window.removeEventListener("resize", checkMobile);
+    }, [table]);
+
     const handleDelete = (id: number) => {
-        setData(prev => prev.filter(item => item.id !== id));
+        setData((prev) => prev.filter((item) => item.id !== id));
     };
 
     const handleEdit = (id: number) => {
-        console.log('Edit item with id:', id);
+        console.log("Edit item with id:", id);
+    };
+
+    const handleAdd = () => {
+        setData((prev) => [
+            ...prev,
+            {
+                id: prev.length + 1,
+                name: "Item Baru",
+                condition: "Baik",
+                conditionColor: "text-green-600 bg-green-50",
+                location: "Lokasi baru",
+                description: "Deskripsi item baru",
+            },
+        ]);
     };
 
 
@@ -175,8 +206,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Table Controls */}
-            <div className="mb-6 flex justify-between items-center">
-                <div className="relative max-w-sm">
+            <div className="mb-6 flex flex-wrap gap-4 justify-between items-center">
+                <div className="relative max-w-[300px] flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                         type="text"
@@ -186,44 +217,55 @@ export default function DashboardPage() {
                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm"
                     />
                 </div>
-                <div className="text-sm text-gray-500">
-                    Menampilkan {table.getRowModel().rows.length} dari {data.length} data
-                </div>
+                <AddButton onClick={handleAdd} label="Tambah Inventaris" size="md" />
             </div>
 
-            {/* Table */}
             {/* Table (Desktop) */}
             <div className="hidden md:block bg-white rounded-lg border border-gray-200 shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="min-w-max w-full">
                         <thead className="bg-gray-50">
-                            {table.getHeaderGroups().map(headerGroup => (
+                            {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => (
+                                    {headerGroup.headers.map((header) => (
                                         <th
                                             key={header.id}
                                             className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
                                             <div className="flex items-center space-x-1">
-                                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                                {header.column.getIsSorted() && (
-                                                    header.column.getIsSorted() === 'desc'
-                                                        ? <ChevronDown className="w-4 h-4" />
-                                                        : <ChevronUp className="w-4 h-4" />
+                                                {flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
                                                 )}
+                                                {header.column.getIsSorted() &&
+                                                    (header.column.getIsSorted() === "desc" ? (
+                                                        <ChevronDown className="w-4 h-4" />
+                                                    ) : (
+                                                        <ChevronUp className="w-4 h-4" />
+                                                    ))}
                                             </div>
                                         </th>
                                     ))}
                                 </tr>
                             ))}
                         </thead>
+
                         <tbody className="divide-y divide-gray-200">
-                            {table.getRowModel().rows.map(row => (
-                                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                                    {row.getVisibleCells().map(cell => (
-                                        <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {table.getRowModel().rows.map((row) => (
+                                <tr
+                                    key={row.id}
+                                    className="hover:bg-gray-50 transition-colors"
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <td
+                                            key={cell.id}
+                                            className="px-6 py-4 whitespace-nowrap"
+                                        >
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
                                         </td>
                                     ))}
                                 </tr>
@@ -231,11 +273,40 @@ export default function DashboardPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination Controls */}
+                <div className="border-t border-gray-200">
+                    <div className="flex items-center justify-between p-4">
+                        <span className="text-sm text-gray-500">
+                            Menampilkan {table.getRowModel().rows.length} dari {data.length} data
+                        </span>
+                        <div className="flex items-center space-x-9">
+                            <button
+                                onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}
+                                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                            >
+                                Sebelumnya
+                            </button>
+                            <span className="text-sm text-gray-500">
+                                Laman {table.getState().pagination.pageIndex + 1} dari{" "}
+                                {table.getPageCount()}
+                            </span>
+                            <button
+                                onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}
+                                className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                            >
+                                Selanjutnya
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Cards (Mobile) */}
             <div className="block md:hidden space-y-4">
-                {table.getRowModel().rows.slice(0, 5).map(row => {
+                {table.getPaginationRowModel().rows.map((row) => {
                     const item = row.original as InventoryItem;
                     return (
                         <div
@@ -273,6 +344,7 @@ export default function DashboardPage() {
                         </div>
                     );
                 })}
+
                 {/* Pagination for cards */}
                 <div className="flex items-center justify-between mt-4">
                     <button
@@ -280,17 +352,18 @@ export default function DashboardPage() {
                         disabled={!table.getCanPreviousPage()}
                         className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
                     >
-                        Previous
+                        Sebelumnya
                     </button>
                     <span className="text-sm text-gray-500">
-                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                        Page {table.getState().pagination.pageIndex + 1} of{" "}
+                        {table.getPageCount()}
                     </span>
                     <button
                         onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}
                         className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
                     >
-                        Next
+                        Selanjutnya
                     </button>
                 </div>
             </div>
