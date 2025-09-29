@@ -11,6 +11,7 @@ import {
     type SortingState,
 } from "@tanstack/react-table";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Search, ChevronUp, ChevronDown, Edit, Trash2 } from "lucide-react";
 import AddButton from "../../components/ui/AddButton";
 
@@ -25,6 +26,8 @@ interface InventoryItem {
 }
 
 export default function DashboardPage() {
+    const router = useRouter();
+
     const [data, setData] = useState<InventoryItem[]>([
         {
             id: 1,
@@ -160,21 +163,11 @@ export default function DashboardPage() {
     };
 
     const handleEdit = (id: number) => {
-        console.log("Edit item with id:", id);
+        router.push("./inventaris/editInventaris");
     };
 
     const handleAdd = () => {
-        setData((prev) => [
-            ...prev,
-            {
-                id: prev.length + 1,
-                name: "Item Baru",
-                condition: "Baik",
-                conditionColor: "text-green-600 bg-green-50",
-                location: "Lokasi baru",
-                description: "Deskripsi item baru",
-            },
-        ]);
+        router.push("./inventaris/tambahInventaris");
     };
 
     return (

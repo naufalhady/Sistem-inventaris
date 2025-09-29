@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="flex h-screen bg-gray-50 ">
+        <div className="flex h-screen bg-white ">
             {/* Sidebar hanya muncul di desktop */}
             <div className="hidden md:block">
                 <Sidebar />
