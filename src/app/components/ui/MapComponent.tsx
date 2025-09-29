@@ -34,18 +34,24 @@ interface MapComponentProps {
 
 export default function MapComponent({ position, setPosition }: MapComponentProps) {
     return (
-        <MapContainer
-            center={[-6.2, 106.8]} // default Jakarta
-            zoom={12}
-            scrollWheelZoom={true}
-            className="h-64 w-full rounded-lg border"
-        >
-            <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="&copy; OpenStreetMap contributors"
-            />
-            <LocationMarker setPosition={setPosition} />
-            {position && <Marker position={position}></Marker>}
-        </MapContainer>
+        <div className="relative z-0"> {/* Tambahkan wrapper dengan z-0 */}
+            <MapContainer
+                center={position || [-6.2, 106.8]} // default Jakarta
+                zoom={12}
+                scrollWheelZoom={true}
+                className="h-56 w-full rounded-lg border"
+                style={{
+                    zIndex: 1, // Atur z-index rendah untuk map
+                    position: 'relative'
+                }}
+            >
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution="&copy; OpenStreetMap contributors"
+                />
+                <LocationMarker setPosition={setPosition} />
+                {position && <Marker position={position}></Marker>}
+            </MapContainer>
+        </div>
     );
 }

@@ -106,13 +106,19 @@ export default function DashboardPage() {
             cell: (info) => (
                 <div className="flex items-center justify-end space-x-2">
                     <button
-                        onClick={() => handleEdit(info.row.original.id)}
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            handleEdit(info.row.original.id);
+                        }}
                         className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                     >
                         <Edit className="w-4 h-4" />
                     </button>
                     <button
-                        onClick={() => handleDelete(info.row.original.id)}
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            handleDelete(info.row.original.id);
+                        }}
                         className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                     >
                         <Trash2 className="w-4 h-4" />
@@ -163,11 +169,15 @@ export default function DashboardPage() {
     };
 
     const handleEdit = (id: number) => {
-        router.push("./inventaris/editInventaris");
+        router.push(`./inventaris/editInventaris?id=${id}`);
     };
 
     const handleAdd = () => {
         router.push("./inventaris/tambahInventaris");
+    };
+
+    const handleRowClick = (id: number) => {
+        router.push(`./inventaris/detailInventaris?id=${id}`);
     };
 
     return (
@@ -222,7 +232,8 @@ export default function DashboardPage() {
                             {table.getRowModel().rows.map((row) => (
                                 <tr
                                     key={row.id}
-                                    className="hover:bg-gray-50 transition-colors"
+                                    onClick={() => handleRowClick(row.original.id)}
+                                    className="hover:bg-gray-50 transition-colors cursor-pointer"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <td
@@ -278,7 +289,8 @@ export default function DashboardPage() {
                     return (
                         <div
                             key={item.id}
-                            className="bg-white rounded-lg border border-gray-200 shadow-sm p-4"
+                            onClick={() => handleRowClick(item.id)}
+                            className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 cursor-pointer hover:border-blue-300 transition-colors"
                         >
                             <div className="flex justify-between items-start">
                                 <div>
@@ -296,13 +308,19 @@ export default function DashboardPage() {
                             {/* Actions */}
                             <div className="flex items-center space-x-2 mt-3">
                                 <button
-                                    onClick={() => handleEdit(item.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click
+                                        handleEdit(item.id);
+                                    }}
                                     className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                                 >
                                     <Edit className="w-4 h-4" />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(item.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click
+                                        handleDelete(item.id);
+                                    }}
                                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                                 >
                                     <Trash2 className="w-4 h-4" />
