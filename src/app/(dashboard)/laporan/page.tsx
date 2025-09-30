@@ -1,326 +1,334 @@
+// src/app/(dashboard)/laporan/page.tsx
+
 "use client";
 
-import {
-    useReactTable,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    flexRender,
-    createColumnHelper,
-    type SortingState,
-} from "@tanstack/react-table";
 import { useState } from "react";
-import { Search, ChevronUp, ChevronDown, Edit, Trash2 } from "lucide-react";
-import AddButton from "../../components/ui/AddButton";
+import { useRouter } from "next/navigation";
+import { Search, Download, Filter, Calendar, BarChart3, FileText, MapPin, AlertTriangle } from "lucide-react";
 
-// Define the type for our inventory data
-interface InventoryItem {
+interface ReportData {
     id: number;
-    name: string;
-    condition: string;
-    conditionColor: string;
-    location: string;
-    description: string;
+    title: string;
+    type: string;
+    period: string;
+    generatedDate: string;
+    status: string;
+    statusColor: string;
+    downloadCount: number;
 }
 
-export default function DashboardPage() {
-    const [data, setData] = useState<InventoryItem[]>([
+interface InventoryStats {
+    totalItems: number;
+    goodCondition: number;
+    needsRepair: number;
+    damaged: number;
+    maintenanceThisMonth: number;
+}
+
+export default function LaporanPage() {
+    const router = useRouter();
+
+    const [selectedPeriod, setSelectedPeriod] = useState<string>("monthly");
+    const [dateRange, setDateRange] = useState({
+        start: "",
+        end: ""
+    });
+
+    // Data statistik inventaris
+    const inventoryStats: InventoryStats = {
+        totalItems: 156,
+        goodCondition: 124,
+        needsRepair: 18,
+        damaged: 14,
+        maintenanceThisMonth: 23
+    };
+
+    // Data laporan yang telah digenerate
+    const reportData: ReportData[] = [
         {
             id: 1,
-            name: "Lampu Jalan",
-            condition: "Baik",
-            conditionColor: "text-green-600 bg-green-50",
-            location: "KM 15+200 Tol Jakarta-Cikampek",
-            description: "Lampu LED 100W dengan tiang galvanis",
+            title: "Laporan Bulanan Inventaris",
+            type: "Bulanan",
+            period: "Januari 2024",
+            generatedDate: "2024-01-31",
+            status: "Selesai",
+            statusColor: "text-green-600 bg-green-50",
+            downloadCount: 15
         },
         {
             id: 2,
-            name: "Rambu Lalu Lintas",
-            condition: "Rusak",
-            conditionColor: "text-red-600 bg-red-50",
-            location: "KM 22+500 Tol Jakarta-Cikampek",
-            description: "Rambu batas kecepatan 80 km/jam",
+            title: "Laporan Kondisi Perlengkapan",
+            type: "Kondisi",
+            period: "Q1 2024",
+            generatedDate: "2024-03-31",
+            status: "Selesai",
+            statusColor: "text-green-600 bg-green-50",
+            downloadCount: 8
         },
         {
             id: 3,
-            name: "CCTV Pengawas",
-            condition: "Baik",
-            conditionColor: "text-green-600 bg-green-50",
-            location: "KM 18+100 Tol Jakarta-Cikampek",
-            description: "Kamera pengawas lalu lintas HD",
+            title: "Laporan Pemeliharaan",
+            type: "Pemeliharaan",
+            period: "Maret 2024",
+            generatedDate: "2024-03-15",
+            status: "Selesai",
+            statusColor: "text-green-600 bg-green-50",
+            downloadCount: 12
         },
         {
             id: 4,
-            name: "Guardrail",
-            condition: "Perlu Perbaikan",
-            conditionColor: "text-yellow-600 bg-yellow-50",
-            location: "KM 25+000 Tol Jakarta-Cikampek",
-            description: "Pembatas jalan sepanjang 50 meter",
-        },
-    ]);
-
-    const [sorting, setSorting] = useState<SortingState>([]);
-    const [filtering, setFiltering] = useState<string>("");
-
-    const columnHelper = createColumnHelper<InventoryItem>();
-
-    const columns = [
-        columnHelper.accessor("name", {
-            header: "Nama Inventaris",
-            cell: (info) => (
-                <div className="font-medium text-gray-900">{info.getValue()}</div>
-            ),
-        }),
-        columnHelper.accessor("condition", {
-            header: "Kondisi",
-            cell: (info) => {
-                const row = info.row.original;
-                return (
-                    <span
-                        className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${row.conditionColor}`}
-                    >
-                        {info.getValue()}
-                    </span>
-                );
-            },
-        }),
-        columnHelper.accessor("location", {
-            header: "Lokasi",
-            cell: (info) => {
-                const row = info.row.original;
-                return (
-                    <div>
-                        <p className="font-medium text-gray-900">{info.getValue()}</p>
-                        <p className="text-sm text-gray-500">{row.description}</p>
-                    </div>
-                );
-            },
-        }),
-        columnHelper.display({
-            id: "actions",
-            header: "",
-            cell: (info) => (
-                <div className="flex items-center justify-end space-x-2">
-                    <button
-                        onClick={() => handleEdit(info.row.original.id)}
-                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                    >
-                        <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => handleDelete(info.row.original.id)}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                    >
-                        <Trash2 className="w-4 h-4" />
-                    </button>
-                </div>
-            ),
-        }),
+            title: "Laporan Inspeksi Rutin",
+            type: "Inspeksi",
+            period: "Minggu ke-2 Mar 2024",
+            generatedDate: "2024-03-10",
+            status: "Dalam Proses",
+            statusColor: "text-yellow-600 bg-yellow-50",
+            downloadCount: 0
+        }
     ];
 
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        state: {
-            sorting,
-            globalFilter: filtering,
-        },
-        onSortingChange: setSorting,
-        onGlobalFilterChange: setFiltering,
-        initialState: {
-            pagination: {
-                pageSize: 10,
-            },
-        },
-    });
-
-    const handleDelete = (id: number) => {
-        setData((prev) => prev.filter((item) => item.id !== id));
+    const handleGenerateReport = () => {
+        // TODO: Logic untuk generate laporan
+        console.log("Generate laporan dengan periode:", selectedPeriod, dateRange);
+        alert("Laporan sedang diproses...");
     };
 
-    const handleEdit = (id: number) => {
-        console.log("Edit item with id:", id);
+    const handleDownloadReport = (reportId: number) => {
+        // TODO: Logic untuk download laporan
+        console.log("Download laporan dengan ID:", reportId);
+        alert(`Mengunduh laporan #${reportId}`);
     };
 
-    const handleAdd = () => {
-        setData((prev) => [
-            ...prev,
-            {
-                id: prev.length + 1,
-                name: "Item Baru",
-                condition: "Baik",
-                conditionColor: "text-green-600 bg-green-50",
-                location: "Lokasi baru",
-                description: "Deskripsi item baru",
-            },
-        ]);
+    const handleQuickReport = (type: string) => {
+        // TODO: Logic untuk quick report
+        console.log("Quick report:", type);
+        alert(`Membuat laporan ${type}...`);
     };
 
     return (
         <div className="p-8 bg-white">
-            {/* Table Controls */}
-            <div className="mb-6 flex flex-wrap gap-4 justify-between items-center">
-                <div className="relative max-w-sm flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <input
-                        type="text"
-                        placeholder="Cari inventaris..."
-                        value={filtering}
-                        onChange={(e) => setFiltering(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm"
-                    />
-                </div>
-                <div className="text-sm text-gray-500">
-                    Menampilkan {table.getRowModel().rows.length} dari {data.length} data
-                </div>
-                <AddButton onClick={handleAdd} label="Tambah Inventaris" size="md" />
+            {/* Header Section */}
+            <div className="mb-8">
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">Laporan & Analitik</h1>
+                <p className="text-gray-600">Pantau dan unduh laporan sistem inventaris perlengkapan jalan tol.</p>
             </div>
 
-            {/* Table (Desktop) */}
-            <div className="hidden md:block bg-white rounded-lg border border-gray-200 shadow-sm">
-                <div className="overflow-x-auto">
-                    <table className="min-w-max w-full">
-                        <thead className="bg-gray-50">
-                            {table.getHeaderGroups().map((headerGroup) => (
-                                <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map((header) => (
-                                        <th
-                                            key={header.id}
-                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                                            onClick={header.column.getToggleSortingHandler()}
-                                        >
-                                            <div className="flex items-center space-x-1">
-                                                {flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                                {header.column.getIsSorted() &&
-                                                    (header.column.getIsSorted() === "desc" ? (
-                                                        <ChevronDown className="w-4 h-4" />
-                                                    ) : (
-                                                        <ChevronUp className="w-4 h-4" />
-                                                    ))}
-                                            </div>
-                                        </th>
-                                    ))}
-                                </tr>
-                            ))}
-                        </thead>
-
-                        <tbody className="divide-y divide-gray-200">
-                            {table.getRowModel().rows.map((row) => (
-                                <tr
-                                    key={row.id}
-                                    className="hover:bg-gray-50 transition-colors"
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <td
-                                            key={cell.id}
-                                            className="px-6 py-4 whitespace-nowrap"
-                                        >
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+            {/* Quick Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Total Inventaris</h3>
+                            <p className="text-3xl font-bold text-gray-900">{inventoryStats.totalItems}</p>
+                        </div>
+                        <div className="p-3 bg-blue-50 rounded-lg">
+                            <MapPin className="w-6 h-6 text-blue-600" />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Pagination Controls */}
-                <div className="border-t border-gray-200">
-                    <div className="flex items-center justify-between p-4">
-                        <button
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-                        >
-                            Previous
-                        </button>
-                        <span className="text-sm text-gray-500">
-                            Page {table.getState().pagination.pageIndex + 1} of{" "}
-                            {table.getPageCount()}
-                        </span>
-                        <button
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                            className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-                        >
-                            Next
-                        </button>
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Kondisi Baik</h3>
+                            <p className="text-3xl font-bold text-green-600">{inventoryStats.goodCondition}</p>
+                        </div>
+                        <div className="p-3 bg-green-50 rounded-lg">
+                            <BarChart3 className="w-6 h-6 text-green-600" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Perlu Perbaikan</h3>
+                            <p className="text-3xl font-bold text-yellow-600">{inventoryStats.needsRepair}</p>
+                        </div>
+                        <div className="p-3 bg-yellow-50 rounded-lg">
+                            <AlertTriangle className="w-6 h-6 text-yellow-600" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Pemeliharaan Bulan Ini</h3>
+                            <p className="text-3xl font-bold text-purple-600">{inventoryStats.maintenanceThisMonth}</p>
+                        </div>
+                        <div className="p-3 bg-purple-50 rounded-lg">
+                            <FileText className="w-6 h-6 text-purple-600" />
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Cards (Mobile) */}
-            <div className="block md:hidden space-y-4">
-                {table.getRowModel().rows.map((row) => {
-                    const item = row.original as InventoryItem;
-                    return (
-                        <div
-                            key={item.id}
-                            className="bg-white rounded-lg border border-gray-200 shadow-sm p-4"
-                        >
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h4 className="font-semibold text-gray-900">{item.name}</h4>
-                                    <p className="text-sm text-gray-500">{item.location}</p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column - Generate Report */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Generate Report Card */}
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <FileText className="w-5 h-5 mr-2" />
+                            Buat Laporan Baru
+                        </h2>
+
+                        <div className="space-y-4">
+                            {/* Report Type Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Jenis Laporan
+                                </label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        onClick={() => handleQuickReport("inventory")}
+                                        className="p-4 border border-gray-300 rounded-lg text-left hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                                    >
+                                        <FileText className="w-5 h-5 text-blue-600 mb-2" />
+                                        <h4 className="font-medium text-gray-900">Inventaris</h4>
+                                        <p className="text-sm text-gray-500 mt-1">Laporan semua perlengkapan</p>
+                                    </button>
+                                    <button
+                                        onClick={() => handleQuickReport("maintenance")}
+                                        className="p-4 border border-gray-300 rounded-lg text-left hover:border-green-300 hover:bg-green-50 transition-colors"
+                                    >
+                                        <BarChart3 className="w-5 h-5 text-green-600 mb-2" />
+                                        <h4 className="font-medium text-gray-900">Pemeliharaan</h4>
+                                        <p className="text-sm text-gray-500 mt-1">Riwayat perawatan</p>
+                                    </button>
                                 </div>
-                                <span
-                                    className={`px-2 py-1 text-xs font-medium rounded-full ${item.conditionColor}`}
-                                >
-                                    {item.condition}
-                                </span>
                             </div>
-                            <p className="mt-2 text-sm text-gray-600">{item.description}</p>
 
-                            {/* Actions */}
-                            <div className="flex items-center space-x-2 mt-3">
-                                <button
-                                    onClick={() => handleEdit(item.id)}
-                                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                            {/* Period Selection */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Periode Laporan
+                                </label>
+                                <select
+                                    value={selectedPeriod}
+                                    onChange={(e) => setSelectedPeriod(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                                 >
-                                    <Edit className="w-4 h-4" />
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(item.id)}
-                                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                                >
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
+                                    <option value="daily">Harian</option>
+                                    <option value="weekly">Mingguan</option>
+                                    <option value="monthly">Bulanan</option>
+                                    <option value="quarterly">Triwulan</option>
+                                    <option value="yearly">Tahunan</option>
+                                    <option value="custom">Kustom</option>
+                                </select>
                             </div>
+
+                            {/* Date Range (conditional) */}
+                            {selectedPeriod === 'custom' && (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Tanggal Mulai
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={dateRange.start}
+                                            onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Tanggal Selesai
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={dateRange.end}
+                                            onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Generate Button */}
+                            <button
+                                onClick={handleGenerateReport}
+                                className="w-full flex items-center justify-center px-4 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition-colors"
+                            >
+                                <FileText className="w-4 h-4 mr-2" />
+                                Generate Laporan
+                            </button>
                         </div>
-                    );
-                })}
+                    </div>
+                </div>
 
-                {/* Pagination for cards */}
-                <div className="flex items-center justify-between mt-4">
-                    <button
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-                    >
-                        Previous
-                    </button>
-                    <span className="text-sm text-gray-500">
-                        Page {table.getState().pagination.pageIndex + 1} of{" "}
-                        {table.getPageCount()}
-                    </span>
-                    <button
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-                    >
-                        Next
-                    </button>
+                {/* Right Column - Recent Reports */}
+                <div className="space-y-6">
+                    {/* Recent Reports Card */}
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <Calendar className="w-5 h-5 mr-2" />
+                            Laporan Terbaru
+                        </h2>
+
+                        <div className="space-y-4">
+                            {reportData.map((report) => (
+                                <div
+                                    key={report.id}
+                                    className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors"
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <h4 className="font-medium text-gray-900 text-sm">
+                                            {report.title}
+                                        </h4>
+                                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${report.statusColor}`}>
+                                            {report.status}
+                                        </span>
+                                    </div>
+                                    <div className="text-xs text-gray-500 space-y-1">
+                                        <p>Jenis: {report.type}</p>
+                                        <p>Periode: {report.period}</p>
+                                        <p>Dibuat: {new Date(report.generatedDate).toLocaleDateString('id-ID')}</p>
+                                        <p>Download: {report.downloadCount} kali</p>
+                                    </div>
+                                    <button
+                                        onClick={() => handleDownloadReport(report.id)}
+                                        className="w-full mt-3 flex items-center justify-center px-3 py-2 text-xs font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                                    >
+                                        <Download className="w-3 h-3 mr-1" />
+                                        Unduh Laporan
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                            Akses Cepat
+                        </h2>
+                        <div className="space-y-3">
+                            <button
+                                onClick={() => handleQuickReport("condition")}
+                                className="w-full flex items-center justify-between p-3 border border-gray-300 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                            >
+                                <span className="text-sm font-medium text-gray-900">Laporan Kondisi</span>
+                                <BarChart3 className="w-4 h-4 text-gray-400" />
+                            </button>
+                            <button
+                                onClick={() => handleQuickReport("maintenance-schedule")}
+                                className="w-full flex items-center justify-between p-3 border border-gray-300 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors"
+                            >
+                                <span className="text-sm font-medium text-gray-900">Jadwal Perawatan</span>
+                                <Calendar className="w-4 h-4 text-gray-400" />
+                            </button>
+                            <button
+                                onClick={() => handleQuickReport("damage")}
+                                className="w-full flex items-center justify-between p-3 border border-gray-300 rounded-lg hover:border-red-300 hover:bg-red-50 transition-colors"
+                            >
+                                <span className="text-sm font-medium text-gray-900">Laporan Kerusakan</span>
+                                <AlertTriangle className="w-4 h-4 text-gray-400" />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

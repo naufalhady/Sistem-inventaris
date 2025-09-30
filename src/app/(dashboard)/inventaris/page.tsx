@@ -12,8 +12,9 @@ import {
 } from "@tanstack/react-table";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ChevronUp, ChevronDown, Edit, Trash2 } from "lucide-react";
+import { Search, ChevronUp, ChevronDown, Edit, Trash2, Eye } from "lucide-react";
 import AddButton from "../../components/ui/AddButton";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 
 // Define the type for our inventory data
 interface InventoryItem {
@@ -25,7 +26,7 @@ interface InventoryItem {
     description: string;
 }
 
-export default function DashboardPage() {
+export default function InventarisPage() {
     const router = useRouter();
 
     const [data, setData] = useState<InventoryItem[]>([
@@ -65,6 +66,15 @@ export default function DashboardPage() {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [filtering, setFiltering] = useState<string>("");
+    const [deleteModal, setDeleteModal] = useState<{
+        isOpen: boolean;
+        itemId: number | null;
+        itemName: string;
+    }>({
+        isOpen: false,
+        itemId: null,
+        itemName: "",
+    });
 
     const columnHelper = createColumnHelper<InventoryItem>();
 
@@ -108,18 +118,30 @@ export default function DashboardPage() {
                     <button
                         onClick={(e) => {
                             e.stopPropagation(); // Prevent row click
+                            handleView(info.row.original.id);
+                        }}
+                        className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                        title="Lihat Detail"
+                    >
+                        <Eye className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
                             handleEdit(info.row.original.id);
                         }}
                         className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                        title="Edit"
                     >
                         <Edit className="w-4 h-4" />
                     </button>
                     <button
                         onClick={(e) => {
                             e.stopPropagation(); // Prevent row click
-                            handleDelete(info.row.original.id);
+                            openDeleteModal(info.row.original.id, info.row.original.name);
                         }}
                         className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        title="Hapus"
                     >
                         <Trash2 className="w-4 h-4" />
                     </button>
@@ -164,27 +186,56 @@ export default function DashboardPage() {
         return () => window.removeEventListener("resize", checkMobile);
     }, [table]);
 
-    const handleDelete = (id: number) => {
-        setData((prev) => prev.filter((item) => item.id !== id));
+    const openDeleteModal = (id: number, name: string) => {
+        setDeleteModal({
+            isOpen: true,
+            itemId: id,
+            itemName: name,
+        });
+    };
+
+    const closeDeleteModal = () => {
+        setDeleteModal({
+            isOpen: false,
+            itemId: null,
+            itemName: "",
+        });
+    };
+
+    const handleDelete = () => {
+        if (deleteModal.itemId) {
+            setData((prev) => prev.filter((item) => item.id !== deleteModal.itemId));
+            closeDeleteModal();
+        }
+    };
+
+    const handleView = (id: number) => {
+        router.push(`/inventaris/detailInventaris?id=${id}`);
     };
 
     const handleEdit = (id: number) => {
-        router.push(`./inventaris/editInventaris?id=${id}`);
+        router.push(`/inventaris/editInventaris?id=${id}`);
     };
 
     const handleAdd = () => {
-        router.push("./inventaris/tambahInventaris");
+        router.push("/inventaris/tambahInventaris");
     };
 
     const handleRowClick = (id: number) => {
-        router.push(`./inventaris/detailInventaris?id=${id}`);
+        router.push(`/inventaris/detailInventaris?id=${id}`);
     };
 
     return (
         <div className="p-8 bg-white">
+            {/* Header Section */}
+            <div className="mb-8">
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Management Inventaris</h3>
+                <p className="text-gray-600">Kelola dan pantau semua perlengkapan jalan tol.</p>
+            </div>
+
             {/* Table Controls */}
             <div className="mb-6 flex flex-wrap gap-4 justify-between items-center">
-                <div className="relative max-w-[200px] flex-1">
+                <div className="relative max-w-[300px] flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <input
                         type="text"
@@ -310,18 +361,30 @@ export default function DashboardPage() {
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation(); // Prevent card click
+                                        handleView(item.id);
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                                    title="Lihat Detail"
+                                >
+                                    <Eye className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click
                                         handleEdit(item.id);
                                     }}
                                     className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                    title="Edit"
                                 >
                                     <Edit className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation(); // Prevent card click
-                                        handleDelete(item.id);
+                                        openDeleteModal(item.id, item.name);
                                     }}
                                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                    title="Hapus"
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </button>
@@ -340,7 +403,7 @@ export default function DashboardPage() {
                         Sebelumnya
                     </button>
                     <span className="text-sm text-gray-500">
-                        Page {table.getState().pagination.pageIndex + 1} of{" "}
+                        Halaman {table.getState().pagination.pageIndex + 1} dari{" "}
                         {table.getPageCount()}
                     </span>
                     <button
@@ -352,6 +415,17 @@ export default function DashboardPage() {
                     </button>
                 </div>
             </div>
+
+            {/* Modal Konfirmasi Hapus */}
+            <ConfirmDeleteModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleDelete}
+                title="Hapus Inventaris"
+                message={`Apakah Anda yakin ingin menghapus "${deleteModal.itemName}"? Tindakan ini tidak dapat dibatalkan.`}
+                confirmText="Ya, Hapus"
+                cancelText="Batal"
+            />
         </div>
     );
 }

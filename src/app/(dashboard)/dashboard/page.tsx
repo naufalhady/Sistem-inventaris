@@ -11,8 +11,10 @@ import {
     type SortingState
 } from '@tanstack/react-table';
 import { useState, useEffect } from 'react';
-import { Search, ChevronUp, ChevronDown, Edit, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Search, ChevronUp, ChevronDown, Edit, Trash2, Eye } from 'lucide-react';
 import AddButton from "../../components/ui/AddButton";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 
 // Define the type for our inventory data
 interface InventoryItem {
@@ -25,6 +27,8 @@ interface InventoryItem {
 }
 
 export default function DashboardPage() {
+    const router = useRouter();
+
     const [data, setData] = useState<InventoryItem[]>([
         {
             id: 1,
@@ -62,7 +66,15 @@ export default function DashboardPage() {
 
     const [sorting, setSorting] = useState<SortingState>([]);
     const [filtering, setFiltering] = useState<string>('');
-
+    const [deleteModal, setDeleteModal] = useState<{
+        isOpen: boolean;
+        itemId: number | null;
+        itemName: string;
+    }>({
+        isOpen: false,
+        itemId: null,
+        itemName: "",
+    });
 
     const columnHelper = createColumnHelper<InventoryItem>();
 
@@ -104,14 +116,32 @@ export default function DashboardPage() {
             cell: info => (
                 <div className="flex items-center justify-end space-x-2">
                     <button
-                        onClick={() => handleEdit(info.row.original.id)}
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            handleView(info.row.original.id);
+                        }}
+                        className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                        title="Lihat Detail"
+                    >
+                        <Eye className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            handleEdit(info.row.original.id);
+                        }}
                         className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                        title="Edit"
                     >
                         <Edit className="w-4 h-4" />
                     </button>
                     <button
-                        onClick={() => handleDelete(info.row.original.id)}
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click
+                            openDeleteModal(info.row.original.id, info.row.original.name);
+                        }}
                         className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                        title="Hapus"
                     >
                         <Trash2 className="w-4 h-4" />
                     </button>
@@ -156,28 +186,44 @@ export default function DashboardPage() {
         return () => window.removeEventListener("resize", checkMobile);
     }, [table]);
 
-    const handleDelete = (id: number) => {
-        setData((prev) => prev.filter((item) => item.id !== id));
+    const openDeleteModal = (id: number, name: string) => {
+        setDeleteModal({
+            isOpen: true,
+            itemId: id,
+            itemName: name,
+        });
+    };
+
+    const closeDeleteModal = () => {
+        setDeleteModal({
+            isOpen: false,
+            itemId: null,
+            itemName: "",
+        });
+    };
+
+    const handleDelete = () => {
+        if (deleteModal.itemId) {
+            setData((prev) => prev.filter((item) => item.id !== deleteModal.itemId));
+            closeDeleteModal();
+        }
+    };
+
+    const handleView = (id: number) => {
+        router.push(`/inventaris/detailInventaris?id=${id}`);
     };
 
     const handleEdit = (id: number) => {
-        console.log("Edit item with id:", id);
+        router.push(`/inventaris/editInventaris?id=${id}`);
     };
 
     const handleAdd = () => {
-        setData((prev) => [
-            ...prev,
-            {
-                id: prev.length + 1,
-                name: "Item Baru",
-                condition: "Baik",
-                conditionColor: "text-green-600 bg-green-50",
-                location: "Lokasi baru",
-                description: "Deskripsi item baru",
-            },
-        ]);
+        router.push("/inventaris/tambahInventaris");
     };
 
+    const handleRowClick = (id: number) => {
+        router.push(`/inventaris/detailInventaris?id=${id}`);
+    };
 
     return (
         <div className="p-8 bg-white">
@@ -255,7 +301,8 @@ export default function DashboardPage() {
                             {table.getRowModel().rows.map((row) => (
                                 <tr
                                     key={row.id}
-                                    className="hover:bg-gray-50 transition-colors"
+                                    onClick={() => handleRowClick(row.original.id)}
+                                    className="hover:bg-gray-50 transition-colors cursor-pointer"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <td
@@ -311,7 +358,8 @@ export default function DashboardPage() {
                     return (
                         <div
                             key={item.id}
-                            className="bg-white rounded-lg border border-gray-200 shadow-sm p-4"
+                            onClick={() => handleRowClick(item.id)}
+                            className="bg-white rounded-lg border border-gray-200 shadow-sm p-4 cursor-pointer hover:border-blue-300 transition-colors"
                         >
                             <div className="flex justify-between items-start">
                                 <div>
@@ -329,14 +377,32 @@ export default function DashboardPage() {
                             {/* Actions */}
                             <div className="flex items-center space-x-2 mt-3">
                                 <button
-                                    onClick={() => handleEdit(item.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click
+                                        handleView(item.id);
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-green-600 transition-colors"
+                                    title="Lihat Detail"
+                                >
+                                    <Eye className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click
+                                        handleEdit(item.id);
+                                    }}
                                     className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                                    title="Edit"
                                 >
                                     <Edit className="w-4 h-4" />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(item.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation(); // Prevent card click
+                                        openDeleteModal(item.id, item.name);
+                                    }}
                                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                    title="Hapus"
                                 >
                                     <Trash2 className="w-4 h-4" />
                                 </button>
@@ -355,7 +421,7 @@ export default function DashboardPage() {
                         Sebelumnya
                     </button>
                     <span className="text-sm text-gray-500">
-                        Page {table.getState().pagination.pageIndex + 1} of{" "}
+                        Halaman {table.getState().pagination.pageIndex + 1} dari{" "}
                         {table.getPageCount()}
                     </span>
                     <button
@@ -367,6 +433,17 @@ export default function DashboardPage() {
                     </button>
                 </div>
             </div>
+
+            {/* Modal Konfirmasi Hapus */}
+            <ConfirmDeleteModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleDelete}
+                title="Hapus Inventaris"
+                message={`Apakah Anda yakin ingin menghapus "${deleteModal.itemName}"? Tindakan ini tidak dapat dibatalkan.`}
+                confirmText="Ya, Hapus"
+                cancelText="Batal"
+            />
         </div>
     );
 }
