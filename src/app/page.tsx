@@ -9,7 +9,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // Route groups dengan (dashboard) akan tetap accessible di /dashboard
-    router.replace('/dashboard');
+    router.replace('/login');
   }, [router]);
 
   return (
