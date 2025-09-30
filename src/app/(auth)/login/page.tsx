@@ -68,42 +68,29 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
             <div className="max-w-md w-full space-y-8">
-                {/* Header
-                <div className="text-center">
-                    <div className="flex justify-center items-center mb-6">
+
+                {/* Header */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                    <div className="flex items-center justify-center space-x-4">
+                        {/* Logo */}
                         <div className="bg-gray-800 p-3 rounded-2xl">
                             <Building className="w-8 h-8 text-white" />
                         </div>
+
+                        {/* Text */}
+                        <div className="text-left">
+                            <h2 className="text-2xl font-bold text-gray-900">
+                                Sistem Inventaris
+                            </h2>
+                            <p className="text-gray-600">
+                                Perlengkapan Jalan Tol
+                            </p>
+                        </div>
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900">
-                        Sistem Inventaris
-                    </h2>
-                    <p className="mt-2 text-gray-600">
-                        Perlengkapan Jalan Tol
-                    </p>
-                    <p className="mt-6 text-sm text-gray-500">
-                        Masuk ke akun Anda untuk melanjutkan
-                    </p>
-                </div> */}
+                </div>
+
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
                     {/* Login Form */}
-                    <div className="text-center">
-                        <div className="flex justify-center items-center mb-6">
-                            <div className="bg-gray-800 p-3 rounded-2xl">
-                                <Building className="w-8 h-8 text-white" />
-                            </div>
-                        </div>
-                        <h2 className="text-3xl font-bold text-gray-900">
-                            Sistem Inventaris
-                        </h2>
-                        <p className="mt-2 text-gray-600">
-                            Perlengkapan Jalan Tol
-                        </p>
-                        <p className="mt-6 mb-6 text-sm text-gray-500">
-                            Masuk ke akun Anda untuk melanjutkan
-                        </p>
-                    </div>
-
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
                             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -112,6 +99,9 @@ export default function LoginPage() {
                         )}
 
                         {/* Email Field */}
+                        <p className=" text-sm text-gray-500">
+                            Masuk ke akun Anda untuk melanjutkan
+                        </p>
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                                 Email
