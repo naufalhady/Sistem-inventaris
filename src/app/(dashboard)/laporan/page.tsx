@@ -206,7 +206,7 @@ export default function LaporanPage() {
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                                     activeTab === tab.id
-                                        ? "border-blue-500 text-blue-600"
+                                        ? "border-gray-500 text-gray-600"
                                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                                 }`}
                             >
@@ -234,7 +234,7 @@ export default function LaporanPage() {
                 <div className="flex space-x-3">
                     <button
                         onClick={handleExport}
-                        className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition-colors"
+                        className="flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg shadow hover:bg-gray-700 transition-colors"
                     >
                         <Download className="w-4 h-4 mr-2" />
                         Export Laporan

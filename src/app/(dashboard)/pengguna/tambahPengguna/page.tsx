@@ -255,7 +255,7 @@ export default function TambahPenggunaPage() {
                     </button>
                     <button
                         type="submit"
-                        className="flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition-colors"
+                        className="flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-gray-600 rounded-lg shadow hover:bg-gray-700 transition-colors"
                     >
                         <Save className="w-4 h-4 mr-2" />
                         Tambah Pengguna

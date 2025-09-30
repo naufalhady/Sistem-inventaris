@@ -194,8 +194,8 @@ export default function EditInventoryPage() {
 
                         {/* Info tambahan bisa ditambah di sini */}
                         <div className="md:col-span-2">
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <p className="text-sm text-blue-700">
+                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <p className="text-sm text-gray-700">
                                     💡 <strong>Tips:</strong> Pastikan tanggal pemeliharaan terakhir selalu diperbarui setelah melakukan perawatan.
                                 </p>
                             </div>
@@ -240,7 +240,7 @@ export default function EditInventoryPage() {
                     </button>
                     <button
                         type="submit"
-                        className="flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition-colors"
+                        className="flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-gray-600 rounded-lg shadow hover:bg-gray-700 transition-colors"
                     >
                         <Save className="w-4 h-4 mr-2" />
                         Simpan Perubahan

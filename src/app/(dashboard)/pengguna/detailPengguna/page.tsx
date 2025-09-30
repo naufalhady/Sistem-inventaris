@@ -98,8 +98,8 @@ function DetailContent() {
                         Hapus
                     </button>
                     <button
-                        onClick={() => router.push(`/users/edit?id=${id}`)}
-                        className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                        onClick={() => router.push(`/pengguna/editPengguna?id=${id}`)}
+                        className="flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
                     >
                         <Edit className="w-4 h-4 mr-2" />
                         Edit

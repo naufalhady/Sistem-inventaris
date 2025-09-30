@@ -4,7 +4,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, LogIn, Building } from "lucide-react";
+import { Eye, EyeOff, LogIn, Building, Package } from "lucide-react";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -73,8 +73,8 @@ export default function LoginPage() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
                     <div className="flex items-center justify-center space-x-4">
                         {/* Logo */}
-                        <div className="bg-gray-800 p-3 rounded-2xl">
-                            <Building className="w-8 h-8 text-white" />
+                        <div className="bg-gray-100 p-3 rounded-2xl">
+                            <Package className="w-8 h-8 text-gray-600" />
                         </div>
 
                         {/* Text */}
@@ -176,9 +176,14 @@ export default function LoginPage() {
 
                 {/* Footer */}
                 <div className="text-center">
-                    <p className="text-xs text-gray-500">
-                        © 2024 Sistem Inventaris Perlengkapan Jalan Tol. All rights reserved.
-                    </p>
+                    <div className="block sm:flex sm:justify-center sm:items-center">
+                        <p className="text-xs text-gray-500 mb-2 sm:mb-0 sm:mr-1">
+                            © 2024 Sistem Inventaris
+                        </p>
+                        <p className="text-xs text-gray-500">
+                            Perlengkapan Jalan Tol. All rights reserved.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
