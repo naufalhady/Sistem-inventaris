@@ -303,13 +303,13 @@ export default function UsersManagementPage() {
             <div className="hidden md:block bg-white rounded-lg border border-gray-200 shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="min-w-max w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-blue-50">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
                                         <th
                                             key={header.id}
-                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                            className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider cursor-pointer hover:bg-blue-100"
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
                                             <div className="flex items-center space-x-1">
@@ -335,7 +335,7 @@ export default function UsersManagementPage() {
                                 <tr
                                     key={row.id}
                                     onClick={() => handleRowClick(row.original.id)}
-                                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                    className="hover:bg-blue-50 transition-colors cursor-pointer"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <td

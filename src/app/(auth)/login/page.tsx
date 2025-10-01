@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, LogIn, Building, Package } from "lucide-react";
+import Image from 'next/image';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -67,15 +68,23 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-            <div className="max-w-md w-full space-y-8">
+            <div className="max-w-sm w-full space-y-8">
 
                 {/* Header */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                <div className="p-6 mb-4">
                     <div className="flex items-center justify-center space-x-4">
                         {/* Logo */}
-                        <div className="bg-gray-100 p-3 rounded-2xl">
-                            <Package className="w-8 h-8 text-gray-600" />
+                        <div className="bg-white p-3 rounded-2xl border-2 border-slate-200 shadow-sm">
+                            {/* <Package className="w-8 h-8 text-white" /> */}
+                            <Image
+                                src="/LogoJasaMarga.svg"
+                                alt="Jasa Marga Logo"
+                                width={32}
+                                height={32}
+                                className="w-8 h-8"
+                            />
                         </div>
+
 
                         {/* Text */}
                         <div className="text-left">
@@ -83,13 +92,13 @@ export default function LoginPage() {
                                 Sistem Inventaris
                             </h2>
                             <p className="text-gray-600">
-                                Perlengkapan Jalan Tol
+                                Rambu Jalan
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                     {/* Login Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
@@ -99,10 +108,10 @@ export default function LoginPage() {
                         )}
 
                         {/* Email Field */}
-                        <p className=" text-sm text-gray-500">
-                            Masuk ke akun Anda untuk melanjutkan
-                        </p>
                         <div>
+                            <p className=" text-md font-md text-gray-700 mb-4">
+                                Masuk ke akun Anda untuk melanjutkan
+                            </p>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                                 Email
                             </label>
@@ -115,7 +124,7 @@ export default function LoginPage() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 disabled={isLoading}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed text-sm"
                                 placeholder="masukkan email Anda"
                             />
                         </div>
@@ -135,19 +144,19 @@ export default function LoginPage() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     disabled={isLoading}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed pr-12"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none transition-colors disabled:bg-gray-50 disabled:cursor-not-allowed pr-12 text-sm"
                                     placeholder="masukkan password Anda"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     disabled={isLoading}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 disabled:opacity-50 text-sm"
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="w-5 h-5" />
+                                        <EyeOff className="w-4 h-4" />
                                     ) : (
-                                        <Eye className="w-5 h-5" />
+                                        <Eye className="w-4 h-4" />
                                     )}
                                 </button>
                             </div>
@@ -157,16 +166,16 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full flex items-center justify-center px-4 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                            className="w-full flex items-center justify-center px-3 py-2 border border-transparent text-base font-medium rounded-lg text-white bg-slate-800 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm text-md mt-8"
                         >
                             {isLoading ? (
                                 <div className="flex items-center">
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                                     Memproses...
                                 </div>
                             ) : (
                                 <div className="flex items-center">
-                                    <LogIn className="w-5 h-5 mr-2" />
+                                    <LogIn className="w-4 h-4 mr-2" />
                                     Masuk
                                 </div>
                             )}
@@ -178,10 +187,10 @@ export default function LoginPage() {
                 <div className="text-center">
                     <div className="block sm:flex sm:justify-center sm:items-center">
                         <p className="text-xs text-gray-500 mb-2 sm:mb-0 sm:mr-1">
-                            © 2024 Sistem Inventaris
+                            © 2025 Sistem Inventaris
                         </p>
                         <p className="text-xs text-gray-500">
-                            Perlengkapan Jalan Tol. All rights reserved.
+                            Rambu Jalan. All rights reserved.
                         </p>
                     </div>
                 </div>

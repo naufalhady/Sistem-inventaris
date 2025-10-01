@@ -28,7 +28,7 @@ export default function AddButton({
             onClick={onClick}
             disabled={disabled}
             aria-label={label}
-            className={`inline-flex items-center gap-2 rounded-md bg-gray-300 text-gray-800 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-60 disabled:cursor-not-allowed ${sizeClasses[size] || sizeClasses.md
+            className={`inline-flex items-center gap-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-60 disabled:cursor-not-allowed ${sizeClasses[size] || sizeClasses.md
                 } ${className}`}
         >
             <svg

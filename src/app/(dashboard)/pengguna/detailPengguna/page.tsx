@@ -99,7 +99,7 @@ function DetailContent() {
                     </button>
                     <button
                         onClick={() => router.push(`/pengguna/editPengguna?id=${id}`)}
-                        className="flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+                        className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors"
                     >
                         <Edit className="w-4 h-4 mr-2" />
                         Edit
@@ -119,6 +119,14 @@ function DetailContent() {
                         </h2>
 
                         <div className="space-y-4">
+                            <div>
+                                <label className="text-sm font-medium text-gray-500">
+                                    ID Pengguna
+                                </label>
+                                <p className="mt-1 text-base text-gray-900 font-mono">
+                                    #{user.id.toString().padStart(4, '0')}
+                                </p>
+                            </div>
                             <div>
                                 <label className="text-sm font-medium text-gray-500">
                                     Nama Lengkap
@@ -156,35 +164,6 @@ function DetailContent() {
                                     </p>
                                 </div>
                             )}
-                        </div>
-                    </div>
-                    
-                    {/* Account Info Card */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            Status Akun
-                        </h2>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-sm font-medium text-gray-500">
-                                    Status
-                                </label>
-                                <div className="mt-1">
-                                    <span className="inline-flex px-3 py-1 text-sm font-medium rounded-full text-green-600 bg-green-50">
-                                        Aktif
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="text-sm font-medium text-gray-500">
-                                    ID Pengguna
-                                </label>
-                                <p className="mt-1 text-base text-gray-900 font-mono">
-                                    #{user.id.toString().padStart(4, '0')}
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>

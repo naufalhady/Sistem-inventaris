@@ -101,7 +101,7 @@ const usersData = [
 ];
 
 export default function LaporanPage() {
-    const [activeTab, setActiveTab] = useState<"summary" | "inventory" | "users">("summary");
+    const [activeTab, setActiveTab] = useState<"inventory" | "users">("inventory");
     const [exportFormat, setExportFormat] = useState<"pdf" | "excel">("pdf");
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -111,7 +111,7 @@ export default function LaporanPage() {
     const goodCondition = inventoryData.filter(item => item.condition === "Baik").length;
     const needsRepair = inventoryData.filter(item => item.condition === "Perlu Perbaikan").length;
     const damaged = inventoryData.filter(item => item.condition === "Rusak").length;
-    
+
     const goodPercentage = Math.round((goodCondition / totalItems) * 100);
     const problemPercentage = Math.round(((needsRepair + damaged) / totalItems) * 100);
 
@@ -130,8 +130,8 @@ export default function LaporanPage() {
 
     // Pagination calculations
     const totalPages = Math.ceil(
-        activeTab === "inventory" ? inventoryData.length / itemsPerPage : 
-        activeTab === "users" ? usersData.length / itemsPerPage : 1
+        activeTab === "inventory" ? inventoryData.length / itemsPerPage :
+            activeTab === "users" ? usersData.length / itemsPerPage : 1
     );
 
     const currentInventoryData = inventoryData.slice(
@@ -192,10 +192,9 @@ export default function LaporanPage() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="mb-6 border-b border-gray-200">
+            <div className="mb-6 border-b border-blue-200">
                 <nav className="flex space-x-4 sm:space-x-8 overflow-x-auto">
                     {[
-                        { id: "summary", name: "Ringkasan", icon: BarChart3 },
                         { id: "inventory", name: "Data Inventaris", icon: MapPin },
                         { id: "users", name: "Data Pengguna", icon: Users }
                     ].map((tab) => {
@@ -204,11 +203,10 @@ export default function LaporanPage() {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                                    activeTab === tab.id
-                                        ? "border-gray-500 text-gray-600"
+                                className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${activeTab === tab.id
+                                        ? "border-blue-500 text-blue-600"
                                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                                }`}
+                                    }`}
                             >
                                 <Icon className="w-4 h-4 mr-2" />
                                 {tab.name}
@@ -234,7 +232,7 @@ export default function LaporanPage() {
                 <div className="flex space-x-3">
                     <button
                         onClick={handleExport}
-                        className="flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg shadow hover:bg-gray-700 transition-colors"
+                        className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 transition-colors"
                     >
                         <Download className="w-4 h-4 mr-2" />
                         Export Laporan
@@ -244,140 +242,6 @@ export default function LaporanPage() {
 
             {/* Content */}
             <div className="space-y-6">
-                {activeTab === "summary" && (
-                    <div className="space-y-6">
-                        {/* Summary Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                            <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-sm">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-700 mb-2">Total Inventaris</h3>
-                                        <p className="text-2xl sm:text-3xl font-bold text-gray-900">{totalItems}</p>
-                                    </div>
-                                    <div className="p-2 sm:p-3 bg-blue-50 rounded-lg">
-                                        <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-sm">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-700 mb-2">Kondisi Baik</h3>
-                                        <p className="text-2xl sm:text-3xl font-bold text-green-600">{goodCondition}</p>
-                                        <p className="text-sm text-green-600 mt-1">{goodPercentage}%</p>
-                                    </div>
-                                    <div className="p-2 sm:p-3 bg-green-50 rounded-lg">
-                                        <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-sm">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-700 mb-2">Perlu Perbaikan</h3>
-                                        <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{needsRepair}</p>
-                                    </div>
-                                    <div className="p-2 sm:p-3 bg-yellow-50 rounded-lg">
-                                        <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-sm">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-700 mb-2">Rusak</h3>
-                                        <p className="text-2xl sm:text-3xl font-bold text-red-600">{damaged}</p>
-                                        <p className="text-sm text-red-600 mt-1">{problemPercentage}% bermasalah</p>
-                                    </div>
-                                    <div className="p-2 sm:p-3 bg-red-50 rounded-lg">
-                                        <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Location Summary */}
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm">
-                            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                                <MapPin className="w-5 h-5 mr-2" />
-                                Ringkasan per Lokasi
-                            </h2>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Lokasi
-                                            </th>
-                                            <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Total
-                                            </th>
-                                            <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Baik
-                                            </th>
-                                            <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Perlu Perbaikan
-                                            </th>
-                                            <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Rusak
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200">
-                                        {Object.entries(locationSummary).map(([location, stats]) => (
-                                            <tr key={location}>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {location}
-                                                </td>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {stats.total}
-                                                </td>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <span className="text-green-600 font-medium">{stats.good}</span>
-                                                </td>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <span className="text-yellow-600 font-medium">{stats.needsRepair}</span>
-                                                </td>
-                                                <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    <span className="text-red-600 font-medium">{stats.damaged}</span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        {/* Quick Export */}
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm">
-                            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                                Export Cepat
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <button
-                                    onClick={() => handleQuickExport("inventory")}
-                                    className="p-4 border border-gray-300 rounded-lg text-left hover:border-blue-300 hover:bg-blue-50 transition-colors"
-                                >
-                                    <FileText className="w-5 h-5 text-blue-600 mb-2" />
-                                    <h4 className="font-medium text-gray-900">Data Inventaris</h4>
-                                    <p className="text-sm text-gray-500 mt-1">Export semua data inventaris</p>
-                                </button>
-                                <button
-                                    onClick={() => handleQuickExport("users")}
-                                    className="p-4 border border-gray-300 rounded-lg text-left hover:border-green-300 hover:bg-green-50 transition-colors"
-                                >
-                                    <Users className="w-5 h-5 text-green-600 mb-2" />
-                                    <h4 className="font-medium text-gray-900">Data Pengguna</h4>
-                                    <p className="text-sm text-gray-500 mt-1">Export semua data pengguna</p>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
                 {activeTab === "inventory" && (
                     <div>
                         {/* Desktop Table */}
@@ -388,25 +252,25 @@ export default function LaporanPage() {
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full">
-                                    <thead className="bg-gray-50">
+                                    <thead className="bg-blue-50">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                                                 Nama
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                                                 Kondisi
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                                                 Lokasi
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
                                                 Deskripsi
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-200">
                                         {currentInventoryData.map((item) => (
-                                            <tr key={item.id} className="hover:bg-gray-50">
+                                            <tr key={item.id} className="hover:bg-blue-50">
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                                     {item.name}
                                                 </td>

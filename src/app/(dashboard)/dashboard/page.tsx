@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, ChevronUp, ChevronDown, Edit, Trash2, Eye } from 'lucide-react';
+import { Search, ChevronUp, ChevronDown, Edit, Trash2, Eye, Package, MapPin, CheckCircle} from 'lucide-react';
 import AddButton from "../../components/ui/AddButton";
 import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal";
 
@@ -230,24 +230,41 @@ export default function DashboardPage() {
             {/* Header Section */}
             <div className="mb-8">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">Selamat datang kembali, Hady</h3>
-                <p className="text-gray-600">Lacak dan kelola Perlengkapan Jalan Tol.</p>
+                <p className="text-gray-600">Lacak dan kelola Rambu Jalan.</p>
             </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Total inventaris</h3>
-                    <p className="text-3xl font-bold text-gray-900">{data.length}</p>
+                <div className="bg-blue-50 p-6 rounded-lg outline outline-blue-300 relative">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Total inventaris</h3>
+                            <p className="text-3xl font-bold text-gray-900">{data.length}</p>
+                        </div>
+                        <div className='bg-blue-100 p-4 rounded-full'><Package className="w-10 h-10 text-blue-500" /></div>
+                    </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Total titik penempatan</h3>
-                    <p className="text-3xl font-bold text-gray-900">15</p>
+
+                <div className="bg-orange-50 p-6 rounded-lg outline outline-orange-300 relative">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Total titik penempatan</h3>
+                            <p className="text-3xl font-bold text-gray-900">15</p>
+                        </div>
+                        <div className='bg-orange-100 p-4 rounded-full'><MapPin className="w-10 h-10 text-orange-500" /></div>
+                    </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Total inventaris kondisi baik</h3>
-                    <p className="text-3xl font-bold text-gray-900">
-                        {data.filter(item => item.condition === 'Baik').length}
-                    </p>
+
+                <div className="bg-green-50 p-6 rounded-lg outline outline-green-300 relative">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">Total inventaris kondisi baik</h3>
+                            <p className="text-3xl font-bold text-gray-900">
+                                {data.filter(item => item.condition === 'Baik').length}
+                            </p>
+                        </div>
+                        <div className='bg-green-100 p-4 rounded-full'><CheckCircle className="w-10 h-10 text-green-500" /></div>
+                    </div>
                 </div>
             </div>
 
@@ -270,13 +287,13 @@ export default function DashboardPage() {
             <div className="hidden md:block bg-white rounded-lg border border-gray-200 shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="min-w-max w-full">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-blue-50">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <tr key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => (
                                         <th
                                             key={header.id}
-                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-blue-100"
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
                                             <div className="flex items-center space-x-1">
@@ -302,7 +319,7 @@ export default function DashboardPage() {
                                 <tr
                                     key={row.id}
                                     onClick={() => handleRowClick(row.original.id)}
-                                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                                    className="hover:bg-blue-50 transition-colors cursor-pointer"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <td

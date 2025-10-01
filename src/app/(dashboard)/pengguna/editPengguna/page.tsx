@@ -218,7 +218,7 @@ function EditContent() {
                     </button>
                     <button
                         type="submit"
-                        className="flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-gray-600 rounded-lg shadow hover:bg-gray-700 transition-colors"
+                        className="flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-blue-500 rounded-lg shadow hover:bg-blue-600 transition-colors"
                     >
                         <Save className="w-4 h-4 mr-2" />
                         Simpan Perubahan
